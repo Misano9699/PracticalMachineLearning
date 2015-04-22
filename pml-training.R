@@ -1,5 +1,5 @@
 # load libraries
-library(caret);
+library(caret); library(randomForest)
 
 # read training dataset and view the contents
 pmlTraining <- read.csv("D:/workspace/Practical Machine Learning/Opdracht/Practical Machine Learning/pml-training.csv")
@@ -16,7 +16,7 @@ head(pmlTraining)
 # view the summary of the training set
 summary(pmlTraining)
 
-# we see a lot of columns with hardly any values, so use nearZeroVar to identify them
+# I see a lot of columns with hardly any values, so use nearZeroVar to identify them
 nearZeroVar(pmlTraining[,-160],saveMetrics=TRUE)
 
 # remove the nzv columns from the training set
@@ -35,19 +35,19 @@ smallPml <- smallPml[,-c(grep("^max|^min|^var|^avg|^stddev|^amplitude", colnames
 dim(smallPml)
 View(smallPml)
 
-# Now that we have simplified our training set, split this set in a training and test set to train and test our model.
+# Now that I have simplified my training set, split this set in a training and test set to train and test my model.
 # use 60% training vs 40% test (imho the training set is big enough)
-inTrain <- createDataPartition(y=smallPml$classe, list=FALSE)
+inTrain <- createDataPartition(y=smallPml$classe, p=0.6, list=FALSE)
 training <- smallPml[inTrain,]
 testing <- smallPml[-inTrain,]
 
-# use PCA to reduce the number of predictors, to gain 95% accuracy
+# use PCA to reduce the number of predictors, to gain at least 95% accuracy
 pr<-preProcess(training[,-53], method="pca")
+pr
 
 # train the model
 trainPC <- predict(pr,training[,-53])
 modelFit <- train(training$classe ~ .,method="rf",data=trainPC)
-pr
 
 # use this model on the testing data
 testPC <- predict(pr, testing[,-53])
